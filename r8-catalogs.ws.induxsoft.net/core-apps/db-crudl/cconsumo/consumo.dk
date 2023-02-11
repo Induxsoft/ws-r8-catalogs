@@ -1,0 +1,41 @@
+script{
+	$'
+	$(document).ready(function(){
+		if($("#uf_inhabilitado").prop("checked"))
+		{
+			$("#uf_inhabilitado").val(1);
+			
+		}else{
+				$("#uf_inhabilitado").val(0);
+			}
+		$("#uf_inhabilitado").change(function(){
+			if(this.checked)
+			{
+				$(this).val(1);
+			}else{
+				$(this).val(0);
+			}
+		})
+		
+	});
+		function deleteEntity(sys_pk){
+				var res=confirm("¿Esta seguro de eliminar la fila?");
+				if(!res)
+					return;
+				definitive.rest("./"+sys_pk,"DELETE",null,
+					function(entity){
+						//Operación exitosa
+						window.location.reload();
+					},
+					function(error){
+						alert(error)
+						//Error de aplicación
+					},
+					function(error){
+						var er=JSON.stringify(error);
+						var p=JSON.parse(er);
+						alert(p.responseJSON.message);
+					});
+		}
+	'
+}

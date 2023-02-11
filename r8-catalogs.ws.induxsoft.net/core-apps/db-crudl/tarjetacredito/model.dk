@@ -1,0 +1,46 @@
+#include "dkli.dkh"
+#!
+
+module "tarjetacredito.dk"
+{
+    @list_query="select #<@sys_fields>, codigo,descripcion,uf_PorComision from tarjetacredito"
+    @read_query="select #<@sys_fields>, codigo,descripcion,uf_PorComision from #<@table_name> where #<@keyfield>=@_entity_id limit 1;"
+	// @auto_cod="select (if(count(*)>=1,CONCAT('A',LPAD(Cast(MAX(SUBSTR(codigo,4,4))+1 as char),'4','0')),'A0001'))
+	// as codigo from tarjetacredito where codigo like 'A%';"
+    entity.blank::&db,&params
+	{
+		new r
+		{
+			@"uf_PorComision":0
+		}
+		return r
+	}
+	// Codigo::&db,&params
+	// {
+	// 	new cod
+	// 	{
+	// 		@"codigo":dbr.str(@db,"select (if(count(*)>=1,CONCAT('A',LPAD(Cast(MAX(SUBSTR(codigo,4,4))+1 as char),'4','0')),'A0001'))
+	// 		as codigo from tarjetacredito where codigo like 'A%';",@null)
+	// 	}
+	// 	return cod
+	// }
+	tarjeta.create::&db,&params,data
+	{
+		if @@(data,"uf_PorComision")==""
+		{
+			do field.remove(data,"uf_PorComision")
+		}
+		do entity.create(db,params,data)
+	}
+	tarjeta.update::&db,&params,data
+	{
+		if @@(data,"uf_PorComision")==""
+		{
+			do field.remove(data,"uf_PorComision")
+		}
+		do entity.update(db,params,data)
+	}
+	// point @read to caja.read
+	point @create to tarjeta.create
+	point @update to tarjeta.update
+}

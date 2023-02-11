@@ -1,0 +1,6 @@
+GET: /definitive.api.js > $web/r8-catalogs.ws.induxsoft.net/definitive.api.js
+GET: /definitive.css > $web/r8-catalogs.ws.induxsoft.net/css/definitive.css
+GET: /{ws}/ > $web/r8-catalogs.ws.induxsoft.net/index.dkl
+GET,POST,PUT,DELETE: /{ws}/request/{_entities_type}/{_entity_id?}> $web/r8-catalogs.ws.induxsoft.net/core-apps/db-crudl/entry-point.dkl
+*: /{_app_group}/{_connection}/{_entities_type}/{_entity_id?}> $web/r8-catalogs.ws.induxsoft.net/core-apps/db-crudl/entry-point.dkl
+GET: / $web/r8-catalogs.ws.induxsoft.net/index.dkl

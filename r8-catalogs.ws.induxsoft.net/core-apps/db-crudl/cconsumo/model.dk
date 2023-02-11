@@ -1,0 +1,62 @@
+#include "dkli.dkh"
+#!
+
+module "cconsumo.dk"
+{
+	@list_query="select sys_pk, sys_recver, codigo, descripcion from cconsumo order by codigo;"
+
+	@read_query="select #<@sys_fields> sys_pk,codigo, descripcion, precio, ialmacen, notas,uf_inhabilitado from cconsumo where #<@keyfield>=@_entity_id limit 1;"
+	
+	cconsumo.read::&db,&params
+	{
+		ref cconsumo=entity.read(db,params)
+		return cconsumo
+	}
+	cconsumo.create::&db,&params,&data
+	{
+		// do rise_error(99,"eror")
+		@use_transaction=@false
+		if parse.bool(@@(data,"uf_inhabilitado")){
+			data<"uf_inhabilitado">:1
+		}
+		else{
+			data<"uf_inhabilitado">:0
+		}
+		if @@(data,"precio")==""{data<"precio">:0}
+		do dbr.begin(db)
+		 ref res= entity.create(db,params,data)
+		do dbr.commit(db)
+    	return res
+    	exception
+    	{
+    		if dbr.in_transaction(db) {do dbr.rollback(db)}
+    		do rise_error(500,last_error())
+    	}
+		
+	}
+	cconsumo.update::&db,&params,&data
+	{
+		@use_transaction=@false
+		if parse.bool(@@(data,"uf_inhabilitado")){
+			data<"uf_inhabilitado">:1
+		}
+		else{
+			data<"uf_inhabilitado">:0
+		}
+		if @@(data,"precio")==""{data<"precio">:0}
+		do dbr.begin(db)
+		 ref res= entity.update(db,params,data)
+		do dbr.commit(db)
+    	return res
+    	exception
+    	{
+    		if dbr.in_transaction(db) {do dbr.rollback(db)}
+    		do rise_error(500,last_error())
+    	}
+		
+	}
+	
+	point @read to cconsumo.read
+	point @create to cconsumo.create 
+	point @update to cconsumo.update
+}

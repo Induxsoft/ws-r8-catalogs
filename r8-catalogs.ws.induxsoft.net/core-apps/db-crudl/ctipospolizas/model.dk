@@ -1,0 +1,72 @@
+#include "dkli.dkh"
+#!
+
+module "banco.dk"
+{
+    @list_query="select ID as sys_pk,Const,uf_sat_TipoPoliza from #<@table_name>"
+    @keyfield="id"
+	@read_query="select ID as sys_pk,ifnull(sys_recver,0),Const,uf_sat_TipoPoliza from #<@table_name> where #<@keyfield>=@_entity_id limit 1;"
+	@table_name="ctipospolizas"
+
+	poliza.create::&db,&params,&data
+	{
+		id=dbr.num(db,"select max(id)+1 from ctipospolizas limit 1",@null)
+		new d
+		{
+			@"id":id
+			@"Const":@@(data,"descripcion")
+			@"uf_sat_TipoPoliza":@@(data,"uf_sat_TipoPoliza")
+		}
+		if @@(data,"uf_sat_TipoPoliza")=="@"{do field.remove(d,"uf_sat_TipoPoliza")}
+		// do rise_error()
+		do dbr.begin(db)
+		do dbr.insert(db,@table_name,d)
+		do dbr.commit(db)
+
+		exception
+		{
+			if dbr.in_transaction(db){do dbr.rollback(db)}	
+			do rise_error(500,last_error())
+		}
+	}
+	poliza.update::&db,&params,&data
+	{
+		new d
+		{
+			@"Const":@@(data,"descripcion")
+			@"uf_sat_TipoPoliza":@@(data,"uf_sat_TipoPoliza")
+		}
+		if @@(data,"uf_sat_TipoPoliza")=="@"{do field.remove(d,"uf_sat_TipoPoliza")}
+		// do rise_error()
+		do dbr.begin(db)
+		do dbr.update(db,@table_name,d,"id=@id",data)
+		do dbr.commit(db)
+
+		exception
+		{
+			if dbr.in_transaction(db){do dbr.rollback(db)}	
+			do rise_error(500,last_error())
+		}
+	}
+	poliza.delete::&db,&params
+	{
+		if @@(params,"#_entity_id")<3{do rise_error(99,"No se puede eliminar datos del sistema")}
+		new d
+		{
+			@"id":@@(params,"_entity_id")
+		}
+		do dbr.begin(db)
+		do dbr.delete(db,@table_name,"id=@id",d)
+		do dbr.commit(db)
+
+		exception
+		{
+			if dbr.in_transaction(db){do dbr.rollback(db)}	
+			do rise_error(500,last_error())
+		}
+	}
+
+	point @create to poliza.create
+	point @update to poliza.update
+	point @delete to poliza.delete
+}

@@ -1,0 +1,65 @@
+#include "dkli.dkh"
+
+#!
+module "config.dkl"
+{
+	#include "functions.dkh"
+	#include "cookies.dkl"
+	#include "tools-functions.dkl"
+	
+	@catalogs_omit="_protected,_common,gs_solicitud,proveedor,gs_tipo_solicitud,cliente,producto,ciudad,edoprov,tipocliente,tipoproveedor"
+
+	@path_absolute="/usr/devkron/"
+	@name_root="r8-catalogs.ws.induxsoft.net"
+	@path_root="web/"+@name_root ///usr/devkron/web/api.erp.test/icons
+	@path_web=""
+
+	@url_root="https://"+@name_root
+
+	@dir_catalogs=@path_root+"/core-apps/db-crudl/"
+
+	@crudl.qname=""
+	@path_common=@dir_catalogs+"_common/list.dk"
+	@path_template_protected=@path_root+"/_protected/default.htt"
+
+	@crudl.user="ADMIN"
+	@crudl.pwd=""
+	@ws=""
+	if not(isset("@http_context")) && isset("@crud_context"){ref @http_context=@@(@crud_context,"&http")}
+	if isset("@http_context")
+	{
+		@ws=@@(@http_context,"request/get/ws")
+		@crudl.qname="Connections@induxsoft/ws"+@ws+"@workspaces"
+		@name=@@(@http_context,"request/get/namews")
+		@namews=list.str(split(cookie.get("namews"),";"),0)
+
+		if @name!=""
+		{
+			do cookie.set("namews", @name)
+			@namews=list.str(split(cookie.get("namews"),";"),0)
+		}
+		do generarLink()
+	}
+	if isset("@crud_context")
+	{
+		ref @http_context=@@(@crud_context,"&http")
+		@http_context<"session/idp/database*">:@@(@crud_context,"database")
+		if @@(@http_context,"request/get/ws")!=""{
+			@url_root=path.concat(@url_root,@@(@http_context,"request/get/ws")+"/request/")
+			@url_root_entity=path.concat(@url_root,@@(@http_context,"request/get/_entities_type")+"/")
+		}
+		else{
+			@url_root=path.concat(@url_root,@@(@http_context,"request/get/_app_group"))
+			@url_root=path.concat(@url_root,@@(@http_context,"request/get/_connection"))
+			@url_root_entity=path.concat(@url_root,@@(@http_context,"request/get/_entities_type")+"/")
+		}
+	}
+	@access_privilege='
+	{
+		"access":[{"workspace":"'+@ws+'"}]
+	}
+	'
+
+	if @ws==""{@ws="MaxiComercio.R5/BdR8_MXCR5"}
+
+}

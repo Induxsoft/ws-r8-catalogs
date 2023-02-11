@@ -1,0 +1,50 @@
+#include "dkli.dkh"
+#!
+
+module "form.dk"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+    #$
+    div(class="d-flex justify-content-center mt-5" id="#<@url_root_entity>")
+    {
+        div(class="card" style="width:50%" id="dv-w")
+        {
+            div(class="#<ifstr(@('error/message')!='','alert alert-danger','')>"){$"#<@('error/message')>"}
+            div(class="card-body")
+            {
+                form(action="." method="POST")
+                {
+                    label("style"="font-weight:bold"){"Código:"} 
+                    input(type="text" class="form-control" name="codigo" value="#<@('./codigo')>" required="true" maxlength="5")
+                    //input(type="text" class="form-control" name="codigo" value="#<field.dstr(data,'codigo','')>" required="true" maxlength="5")
+                    label("style"="font-weight:bold"){"Descripción:"}
+                    input(type="text" class="form-control" name="descripcion" value="#<@('./descripcion')>" required="true" maxlength="25")
+                    label{"Porcentaje de Comisión:"}
+                    input(type="number" class="form-control" name="uf_PorComision" value="#<@('#./uf_PorComision')>")
+                    input(type="hidden" name="sys_recver" value="#<@('./sys_recver')>")
+                    button(class="btn btn-primary m-1"){"Guardar"}
+                    a(href="../" class="btn btn-danger m-1"){"Cancelar"}
+                }
+            }
+            
+        }
+        #$
+            style{
+                $'
+                @media only screen and (max-width: 500px) and (min-width: 100px)
+                {
+                    #dv-w{
+                        margin-top:30 !important;
+                        width:80% !important;
+                    }
+                }
+                '
+            }
+        
+    }
+    #!
+    do @context.end()
+}

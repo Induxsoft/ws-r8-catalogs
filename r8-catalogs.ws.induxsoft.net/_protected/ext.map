@@ -1,0 +1,3 @@
+.fso >  $fso/fso.*.dkl
+.service > /core-apps/db-crudl/gs_solicitud/up_file.service.dkl
+.css > $web/r8-catalogs.ws.induxsoft.net/definitive.css

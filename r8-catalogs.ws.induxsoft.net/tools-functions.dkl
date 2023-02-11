@@ -1,0 +1,117 @@
+#include "dkli.dkh"
+
+#!
+module "tools.dkl"
+{
+	#include "functions.dkh"
+
+	get.img::nameCat
+	{
+		path_url=path.concat(@url_root,"icons")
+		switch tolower(trim(nameCat))
+		{
+			case "zona"{return path.concat(path_url,nameCat+".jpg")}
+			case "contacto"{return path.concat(path_url,nameCat+".jpg")}
+			case "ciudad"{return path.concat(path_url,nameCat+".jpg")}
+			case "cfgimpuesto"{return path.concat(path_url,"impuestos"+".jpg")}
+			case "categoria"{return path.concat(path_url,nameCat+".jpg")}
+			case "edoprov"{return path.concat(path_url,nameCat+".jpg")}
+			case "linea"{return path.concat(path_url,nameCat+".jpg")}
+			case "departamento"{return path.concat(path_url,nameCat+".jpg")}
+			case "porteador"{return path.concat(path_url,nameCat+".jpg")}
+			case "divisa"{return path.concat(path_url,nameCat+".jpg")}
+			case "ut_aduana"{return path.concat(path_url,"aduana"+".jpg")}
+			case "banco"{return path.concat(path_url,nameCat+".jpg")}
+			case "producto"{return path.concat(path_url,nameCat+".jpg")}
+			case "tipoproveedor"{return path.concat(path_url,nameCat+".jpg")}
+			case "tipocliente"{return path.concat(path_url,nameCat+".jpg")}
+			case "tarjetacredito"{return path.concat(path_url,"tarjetas"+".jpg")}
+			case "caja"{return path.concat(path_url,nameCat+".jpg")}
+			case "pais"{return path.concat(path_url,nameCat+".jpg")}
+			case "cajero"{return path.concat(path_url,nameCat+".jpg")}
+			case "agente"{return path.concat(path_url,nameCat+".jpg")}
+			case "almacen"{return path.concat(path_url,nameCat+".jpg")}
+			case "repartidor"{return path.concat(path_url,nameCat+".jpg")}
+			case "cconsumo"{return path.concat(path_url,"centro_de_consumo"+".jpg")}
+			case "marca"{return path.concat(path_url,nameCat+".jpg")}
+			case "cliente"{return path.concat(path_url,nameCat+".jpg")}
+			case "ctipospolizas"{return path.concat(path_url,"TipoPolizas"+".jpg")}
+		
+		}
+	}
+	get.caption::entity
+	{
+		switch tolower(trim(entity))
+		{
+			case "zona"{return "Zonas"}
+			case "contacto"{return "Contactos"}
+			case "ciudad"{return "Ciudades"}
+			case "cfgimpuesto"{return "Configuración de impuestos"}
+			case "categoria"{return "Categorías"}
+			case "edoprov"{return "Estados"}
+			case "linea"{return "Lineas"}
+			case "departamento"{return "Departamentos"}
+			case "porteador"{return "Porteadores"}
+			case "divisa"{return "Divisas"}
+			case "ut_aduana"{return "Aduanas"}
+			case "banco"{return "Bancos"}
+			case "producto"{return "Productos"}
+			case "tipoproveedor"{return ""}
+			case "tipocliente"{return ""}
+			case "tarjetacredito"{return "Tarjeta de crédito"}
+			case "caja"{return "Cajas"}
+			case "pais"{return "Países"}
+			case "cajero"{return "Cajeros"}
+			case "agente"{return "Agentes"}
+			case "almacen"{return "Almacenes"}
+			case "repartidor"{return "Repartidores"}
+			case "cconsumo"{return "Centro de consumo"}
+			case "marca"{return "Marcas"}
+			case "cliente"{return "Clientes"}
+			case "ctipospolizas"{return "Tipos de pólizas"}
+		
+		}
+	}
+	generarLink::
+	{
+		
+		new addres
+		{
+			@"link":ifstr(@namews=="","workspace",@namews)//"workspace"
+			@"target":"https://ws.induxsoft.net/"+@ws+"?token="+@@(@http_context,"$session/user/ids")
+			@"type":"workspace"
+		}
+		new addres_menu
+		{
+			@"link":"R8 Catálogos"//"workspace"
+			@"target":"/"+@ws+"/?token="+@@(@http_context,"$session/user/ids")//+@@(@http_context,"request/get/_entities_type")+
+			@"type":"Catálogos"
+		}
+		new dx
+		{
+			@"link":ifstr(@@(@http_context,"request/get/_entities_type")=="","Catálogos",get.caption(@@(@http_context,"request/get/_entities_type")))
+			@"target":""
+			@"type":"Catálogos"
+		}
+		new pais
+		{
+			@"link":ifstr(@@(@http_context,"request/get/p")=="","Catálogos",@@(@http_context,"request/get/p"))
+			@"target":"../pais/"
+			@"type":"Catálogos"
+		}
+		new edo
+		{
+			@"link":ifstr(@@(@http_context,"request/get/e")=="","Catálogos",@@(@http_context,"request/get/e"))
+			@"target":"../edoprov/?p="+@@(@http_context,"request/get/p")
+			@"type":"Catálogos"
+		}
+		ref lista_address=list.create()
+		if @ws!=""{do list.add(lista_address,addres)}
+		if @ws!=""{do list.add(lista_address,addres_menu)}
+		if @@(@http_context,"request/get/p")!=""{do list.add(lista_address,pais)}
+		if @@(@http_context,"request/get/e")!=""{do list.add(lista_address,edo)}
+		if @@(@http_context,"request/get/_entities_type")!=""{do list.add(lista_address,dx)}
+		
+		@http_context<"session/address_workspaces*">:lista_address
+	}
+}

@@ -1,0 +1,50 @@
+#include "dkli.dkh"
+
+#!
+program
+{
+    #include "functions.dkh"
+    #include "serialize.dkh"
+    #include "webcl.dkh"
+    #include "config.dkl"
+    #include "tools-functions.dkl"
+
+
+    #$
+    div(class="container-fluid")
+    {
+        h3{$"Catálogos"}
+
+        #!
+        ref catalogos = list.dirs(@dir_catalogs)
+        token =""
+
+        
+
+        if @@(@http_context,"request/get/token") != ""{ token = "?token="+@@(@http_context,"request/get/token")}
+        if @ws!=""{@ws=path.concat(@ws,"request")}
+
+        #$
+        div(class="" id="catalogos")
+        {
+            #!
+            for i=0; i<list.count(catalogos)
+            {
+                c_dir = list.str(catalogos,i)
+                ref route = split(c_dir,"/")
+                c_name = list.str(route,4)
+                if not(isanyword(c_name,@catalogs_omit))
+                {
+                    #$
+                    div(class="" id="griditem"){
+                       a(href='/#<@ws>/#<c_name>/#<token>'){
+                            img(id="imgcat" src="#<get.img(list.str(route,4))>" title="#<list.str(route,4)>"){""} 
+                            // $'#<list.str(route,4)>'
+                        }
+                    }//br{$""}
+                }
+            }
+        }
+        
+    }
+}

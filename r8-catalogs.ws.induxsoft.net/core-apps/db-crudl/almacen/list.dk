@@ -1,0 +1,59 @@
+#include "dkli.dkh"
+#!
+
+module "list_view_almacen.dk"
+{
+	#include "functions.dkh"
+	#include "serialize.dkh"
+	#include "../../../config.dkl"
+	
+	do @context.begin(@crud_context)
+
+	ref @http_context=@("&http")
+	
+	/*
+	. ->output  if error->input
+	output ->modelo
+	input - > payload (datos de entrada)
+	parameters -> los del get url  
+	error -> (Si hay un error !=null)
+	database ->Conexión a la base de datos
+	http -> @http_context (del origen)
+	*/
+	new @table_definition
+    {
+    	@"datatable*":@("&.")
+    	member @"columns"
+        {
+        	member @"codigo"
+        	{
+        		@"caption":"Código"
+        	}
+        	member @"descripcion"
+        	{
+        		@"caption":"Descripción"
+        	}
+        	member @"codcuenta"
+        	{
+        		@"caption":"Codigo Cuenta"
+        	}
+        	member @"_actions"
+        	{
+        		@"caption":"Acción"
+        	}
+        }
+    }
+    #$
+    div(class="m-0 justify-content-center" )
+	{
+		div(class="")
+		{
+			#!
+			#include "almacen.dkl"
+    		include @path_common
+		}
+		
+	}
+   
+	do @context.end()
+}

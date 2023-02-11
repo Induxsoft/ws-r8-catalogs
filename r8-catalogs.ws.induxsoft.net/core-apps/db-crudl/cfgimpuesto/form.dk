@@ -1,0 +1,171 @@
+#include "dkli.dkh"
+#!
+
+module "form_cfgimpuesto.dk"
+{
+    #include "functions.dkh"
+    #include "uielements.dkl"
+    #include "serialize.dkh"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+    // do rise_error(99,to.json(@("&.")))
+ref lista=list.create()
+new d
+{
+    @"valor":"01 - No objeto de impuesto"
+    @"clave":"01"
+}
+new d2
+{
+    @"valor":"02 - Si objeto de impuesto"
+    @"clave":"02"
+}
+new d3
+{
+    @"valor":"03 - Si objeto de impuesto y no obligado al desglose"
+    @"clave":"03"
+}
+    do list.add(lista,d)
+    do list.add(lista,d2)
+    do list.add(lista,d3)
+    new objetoImpuesto
+    {
+        @"datatable*":lista
+        @"id":"ObjetoImp"
+        member "attributes"
+        {
+            @"class":"form-select"
+            @"name":"ObjetoImp"
+        }
+        @"value_field":"clave"
+        @"text_field":"valor"
+        @"selected":@('./ObjetoImp')
+    }
+    #$
+    div(class="container-fluid justify-content-center mt-0")
+    {
+        #!
+        #include "cfgimpuesto.dk"
+        #$
+        br{}
+        div(class="#<ifstr(@('error/message')!='','alert alert-danger','')>"){$"#<@('error/message')>"}
+        form(action="." method="POST")
+        {
+            #$
+            div(class="row")
+            {
+                div(class="justify-content-center" id="dv-w" style="width:75%")
+                {
+                    div(class="card" id="div-first" style="margin-left:8%;border:none")
+                    {
+                        div(class="card-body col-lg-12")
+                        {
+                             label("style"="font-weight:bold"){"Nombre"}
+                            input(type="text" style="" name="nombre" class="form-control" value="#<@('./nombre')>" required="true") 
+                        }
+                    }
+                }
+                
+                
+                div(class="justify-content-center")
+                {
+                   
+                    br{}
+                    table(class="col-lg-12")
+                    {
+                        thead{
+                            tr{
+                                th{""}
+                                th{""}
+                                th(style="text-align:right;background:#0000C0;color:white" ){"A la compra"}
+                                th(style="text-align:right;background:#0000C0;color:white" ){""}
+                                th(style="text-align:right;background:#008000;color:white" ){"A la venta"}
+                                th(style="text-align:right;background:#008000;color:white"){""}
+                            }
+                        }
+                        
+                        tbody{
+                            tr{
+                                td{""}
+                                td(style="text-align:center"){"Tipo de impuesto:"}
+                                td(style="text-align:center"){"Interior(%):"}
+                                td(style="text-align:center"){"Frontera(%):"}
+                                td(style="text-align:center"){"Interior(%):"}
+                                td(style="text-align:center"){"Frontera(%):"}
+                            }
+                            tr{
+                                td{"Impuesto1"}
+                                td{""input(type="text" name="uf_TipoI1" class="form-control" value="#<@('./uf_TipoI1')>")}
+                                td{""input(type="number" name="I1Compra_1" class="form-control" value="#<@('./Interior_Compra1')>")}
+                                td{""input(type="number" name="I1Compra_2" class="form-control" value="#<@('./Frontera_Compra1')>")}
+                                td{""input(type="number" name="I1Venta_1" class="form-control" value="#<@('./Interior_Venta1')>")}
+                                td{""input(type="number" name="I1Venta_2" class="form-control" value="#<@('./Frontera_Venta1')>")}
+                            }
+                            tr{
+                                td{"Impuesto2"}
+                                td{""input(type="text" name="uf_TipoI2" class="form-control" value="#<@('./uf_TipoI2')>")}
+                                td{""input(type="number" name="I2Compra_1" class="form-control" value="#<@('./Interior_Compra2')>")}
+                                td{""input(type="number" name="I2Compra_2" class="form-control" value="#<@('./Frontera_Compra2')>")}
+                                td{""input(type="number" name="I2Venta_1" class="form-control" value="#<@('./Interior_Venta2')>")}
+                                td{""input(type="number" name="I2Venta_2" class="form-control" value="#<@('./Frontera_Venta2')>")}
+                            }
+                            tr{
+                                td{"Impuesto3"}
+                                td{""input(type="text" name="uf_TipoI3" class="form-control" value="#<@('./uf_TipoI3')>")}
+                                td{""input(type="number" name="I3Compra_1" class="form-control" value="#<@('./Interior_Compra3')>")}
+                                td{""input(type="number" name="I3Compra_2" class="form-control" value="#<@('./Frontera_Compra3')>")}
+                                td{""input(type="number" name="I3Venta_1" class="form-control" value="#<@('./Interior_Venta3')>")}
+                                td{""input(type="number" name="I3Venta_2" class="form-control" value="#<@('./Frontera_Venta3')>")}
+                            }
+                            tr{
+                                td{"Impuesto4"}
+                                td{""input(type="text" name="uf_TipoI4" class="form-control" value="#<@('./uf_TipoI4')>")}
+                                td{""input(type="number" name="I4Compra_1" class="form-control" value="#<@('./Interior_Compra4')>")}
+                                td{""input(type="number" name="I4Compra_2" class="form-control" value="#<@('./Frontera_Compra4')>")}
+                                td{""input(type="number" name="I4Venta_1" class="form-control" value="#<@('./Interior_Venta4')>")}
+                                td{""input(type="number" name="I4Venta_2" class="form-control" value="#<@('./Frontera_Venta4')>")}
+                            }
+                        }
+                    }
+                }
+                
+                div(class="col-sm-4")
+                {
+                    label("for"="ObjetoImp" class="form-label"){"Objeto de Impuesto:"}
+                    ##
+                        do uie.dbSelect(objetoImpuesto)
+                    ##
+                }
+                div(class="row")
+                {
+                    div(class="col-sm-4")       
+                    {
+                        input(type="checkbox" id="excentoiva" "#<ifstr(@('#./tasa')!=0,'checked','')>"="true" name="excentoiva" value="#<@('./tasa')>")
+                        label{"Exento IVA"} 
+                    }
+                }
+                input(type="hidden" name="sys_recver" value="#<@('./sys_recver')>")
+                div(class="text-center pt-4")
+                {
+                    button(type="submit" class="btn btn-primary m-1"){"Guardar"}
+                    a(class="btn btn-danger m-1" href="../" ){"Cancelar"}
+                }
+                 style{
+                    $'
+                    @media only screen and (max-width: 500px) and (min-width: 341px)
+                    {
+                        #dv-w
+                        {
+                            width:100% !important;
+                        }
+                        #div-first{
+                           width:100% !important;
+                           margin-left:15% !important;
+                        }
+                    }
+            '
+        }
+            }
+        }
+    }
+}

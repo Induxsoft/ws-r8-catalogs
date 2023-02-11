@@ -1,0 +1,2 @@
+get:/icons/* > $web/r8-catalogs.ws.induxsoft.net/icons/*
+get:/{ws}/request/icons/* > $web/r8-catalogs.ws.induxsoft.net/icons/*

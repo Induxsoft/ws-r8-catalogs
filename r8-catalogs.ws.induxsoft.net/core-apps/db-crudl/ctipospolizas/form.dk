@@ -1,0 +1,88 @@
+#include "dkli.dkh"
+
+#!
+module "form_view_caja.dk"
+{
+	#include "functions.dkh"
+	#include "serialize.dkh"
+    #include "dbr.dkh"
+    #include "uielements.dkl"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+
+    new def_uf_sat
+    {
+        @"datatable*":dbr.list(@("&database"), "SELECT u.Sys_PK,u.uf_Const FROM ut_sat_ctipopoliza u", @null)
+        @"id":"uf_sat_TipoPoliza"
+        member "attributes"
+        {
+            @"class":"form-select"
+            @"name":"uf_sat_TipoPoliza"
+            // @"required":"true"
+        }
+        @"text_field":"uf_Const"
+        @"value_field":"Sys_PK"
+        @"first_text":"Ninguno"
+        @"first_value":"@"
+        @"selected":@('#./uf_sat_TipoPoliza')
+    }
+    // do rise_error(99,to.json(@("&.")))
+    @editable=@false
+    if field.exist(@("&."),"sys_pk") && @("#./sys_pk")<3{
+        @editable=@true
+        def_uf_sat<"attributes/disabled">:@true
+    }
+
+    #$
+    div(id="dvi")
+    {
+        #!
+        #include "poliza.dkl"
+        #$
+
+        div(class="m-0 row justify-content-center ")
+        {
+            div(class="card p-3" id="dv-w" style="width:50%")
+            {
+                div(class="#<ifstr(@('error/message')!='','alert alert-danger','')>"){$"#<@('error/message')>"}
+                div(class="card-body")
+                {
+                    form(action="." method="POST" id="formContact" )
+                    {
+                        label("style"="font-weight:bold"){"Nombre:"}
+                        input(type="text" name="descripcion" "#<ifstr(@editable,'disabled','')>"="true" class="form-control" value="#<@('./Const')>" required="true" maxlength="50")
+
+                        label(class="mt-2" "for"="uf_sat_TipoPoliza"){"uf_sat_TipoPoliza:"}
+                        #!
+                            do uie.dbSelect(def_uf_sat)
+                        #$
+                        
+                        //input(type="number" name="uf_sat_TipoPoliza" min="0" "#<ifstr(@editable,'disabled','')>"="true" id="uf_sat_TipoPoliza" class="form-control" value="#<@('#./uf_sat_TipoPoliza')>" maxlength="150")
+                        
+                        input(type="hidden" name="sys_recver" value="#<@('#./sys_recver')>")
+                        input(type="hidden" name="id" value="#<@('#./sys_pk')>")
+                        button(type="submit" id="btnSave" "#<ifstr(@editable,'disabled','')>"="true" class="btn btn-primary m-1"){"Guardar"}
+                        a(href="../" class="btn btn-danger m-1"){"Cancelar"}
+                    }
+                }
+                
+            }
+            #$
+            style{
+                $'
+                @media only screen and (max-width: 500px) and (min-width: 100px)
+                {
+                    #dv-w{
+                        margin-top:30 !important;
+                        width:80% !important;
+                    }
+                }
+                '
+            }
+        }
+        
+    }
+
+    #!
+    do @context.end()
+}

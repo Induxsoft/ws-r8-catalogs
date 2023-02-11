@@ -1,0 +1,39 @@
+#include "dkli.dkh"
+#!
+
+module "list.dk"
+{
+    #include "functions.dkh"
+    #include "../../../config.dkl"
+    new @table_definition
+    {
+        @"datatable*":@@(@crud_context,"&.")
+        member @"columns"
+        {
+            member @"nombre"
+            {
+                @"caption":"Nombre"
+            }
+            member @"notas"
+            {
+                @"caption":"Notas"
+            }
+            member @"_actions"
+            {
+                @"caption":"Acciones"
+                
+            }
+        }
+    }
+
+    #$
+    div
+    {
+    	#!
+        #include "zona.dkl"
+    	include @path_common
+    }
+
+    #!
+	do @context.end()
+}

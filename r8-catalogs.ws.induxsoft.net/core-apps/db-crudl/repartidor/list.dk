@@ -1,0 +1,36 @@
+#include "dkli.dkh"
+#!
+
+module "list.dk"
+{
+    #include "functions.dkh"
+    #include "../../../config.dkl"
+    new @table_definition
+    {
+        @"datatable*":@@(@crud_context,"&.")
+        member @"columns"
+        {
+            member @"codigo"
+            {
+                @"caption":"Código"
+            }
+            member @"nombre"
+            {
+                @"caption":"Nombre"
+            }
+            member @"_actions"
+            {
+                @"caption":"Acciones"
+            }
+        }
+    }
+
+    #$
+    div(class="m-0 justify-content-center" )
+	{
+    	#!
+    	#include "repartidor.dk"
+        include @path_common
+    }
+    do @context.end()
+}

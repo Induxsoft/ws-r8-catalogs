@@ -1,0 +1,64 @@
+#include "dkli.dkh"
+#!
+
+module "caja.dk"
+{
+@list_query="select c.Sys_PK, c.sys_guid, c.sys_dtcreated, c.sys_timestamp, c.sys_recver,c.sys_deleted, c.sys_lock, c.codigo, c.descripcion,c.codcuenta,mo.descripcion AS descon from caja c 
+	LEFT JOIN cconsumo mo ON c.centroconsumo=mo.Sys_PK where ifnull(c.sys_deleted,0)=0 ; "
+
+
+	@read_query="select #<@sys_fields>,codigo,descripcion,centroconsumo,codcuenta,
+	uf_limefectivo,uf_lime_vntadic,uf_lime_aviso,uf_lime_alerta,uf_corte_req,
+	DATE_FORMAT(uf_horacorte1,'%H:%i') as hora1,
+	DATE_FORMAT(uf_horacorte2,'%H:%i') as hora2,
+	DATE_FORMAT(uf_horacorte3,'%H:%i') as hora3,
+	DATE_FORMAT(uf_horacorte4,'%H:%i') as hora4,
+	DATE_FORMAT(uf_horacorte5,'%H:%i') as hora5,
+	uf_cortereq_vntadic,uf_lim_vntliber,notas
+	from caja where #<@keyfield>=@_entity_id limit 1;"
+	
+	
+	caja.read::&db,&params
+	{
+		ref caja=entity.read(db,params)
+		// caja<"centroConsumo*">:dbr.rec("select sys_pk,sys_recver,codigo,descripcion,notas,precio,ialmacen,uf_domiciliocfd,uf_expedicioncxc,uf_inhabilitado,
+		// 	uf_fechainhabilitacion,uf_grupoprod,porcentaje_esperado from cconsumo where sys_pk=1",caja)
+		return caja
+	}
+	entity.blank::&db,&params
+	{
+		new r
+		{
+			@"uf_limefectivo":0
+			@"uf_lime_vntadic":0
+			@"uf_lime_aviso":0
+			@"uf_cortereq_vntadic":0
+			@"uf_lim_vntliber":0
+			@"hora1":"00:00"
+			@"hora2":"00:00"
+			@"hora3":"00:00"
+			@"hora4":"00:00"
+			@"hora5":"00:00"
+		}
+		return r
+	}
+	caja.create::&db,&params,data
+	{
+		if @@(data,"CodCuenta")==""
+		{
+			do field.remove(data,"CodCuenta")
+		}
+		do entity.create(db,params,data)
+	}
+	caja.update::&db,&params,data
+	{
+		if @@(data,"CodCuenta")==""
+		{
+			do field.remove(data,"CodCuenta")
+		}
+		do entity.update(db,params,data)
+	}
+	point @read to caja.read
+	point @create to caja.create
+	point @update to caja.update
+}

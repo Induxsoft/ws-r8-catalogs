@@ -1,0 +1,66 @@
+#include "dkli.dkh"
+
+#!
+module "form_view_caja.dk"
+{
+	#include "functions.dkh"
+	#include "serialize.dkh"
+    #include "dbr.dkh"
+    #include "uielements.dkl"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+
+    new def_contacto
+    {
+        @"datatable*":dbr.list(@("&database"), "select sys_pk, concat(nombre,' ',apellidos) as nombre from contacto order by nombre", @null)
+        @"id":"selectContact"
+        member "attributes"
+        {
+            @"class":"form-control"
+            @"name":"contacto"
+            @"required":"true"
+        }
+        @"first_text":"Seleccionar..."
+        @"first_value":"@"
+        @"text_field":"nombre"
+        @"value_field":"sys_pk"
+        @"selected":@('./contacto')
+    }
+
+    #$
+    div(id="dvi")
+    {
+        #!
+        #include "banco.dkl"
+        #$
+
+        // div(class="alert alert-danger"){$"#<@('error/message')>"}
+        div(class="row justify-content-center")
+        {
+            div(class="w-75 card col-lg-6")
+            {
+                div(class="#<ifstr(@('error/message')!='','alert alert-danger','')>"){$"#<@('error/message')>"}
+                form(action="." method="POST" id="formContact" onsubmit="return validate()")
+                {
+                    label("style"="font-weight:bold"){"Nombre:"}
+                    input(type="text" name="nombre" class="form-control" value="#<@('./nombre')>" required="true" maxlength="50")
+                    label{"Contacto:"}
+                    #!
+                    do uie.dbSelect(def_contacto)        
+                    #$
+                    label(class="mt-2" "for"="website"){"WebSite:"}
+                    input(type="text" name="website" id="website" class="form-control" value="#<@('./website')>" maxlength="150")
+                    label{"Notas:"}
+                    textarea(name="notas" class="form-control" value="#<@('./notas')>"){$'#<@("./notas")>'}
+                    input(type="hidden" name="sys_recver" value="#<@('./sys_recver')>")
+                    button(type="submit" id="btnSave" class="btn btn-primary m-1"){"Guardar"}
+                    a(href="../" class="btn btn-danger m-1"){"Cancelar"}
+                }
+            }
+        }
+        
+    }
+
+    #!
+    do @context.end()
+}

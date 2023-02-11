@@ -1,0 +1,94 @@
+#include "dkli.dkh"
+#!
+
+module "form.dk"
+{
+    #include "functions.dkh"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+
+    ##
+    div(class = "d-flex justify-content-center")
+    {
+        div(class= "w-50 mt-4" id="dv-w")
+        {
+            div(class="card")
+            {
+                div(class="#<ifstr(@('error/message')!='','alert alert-danger','')>"){$"#<@('error/message')>"}
+
+                div(class= "card-body")
+                {	
+                    form(action="#" method="POST")
+                    {
+                        div(class="mb-3 row")       
+                        {
+                            div(class="col-sm-6")
+                            {
+                                label("style"="font-weight:bold"){"Código:"}
+                                input(type="text" class="form-control" name="codigo" value="#<@('./codigo')>" required="true" maxlength="5")
+                            }
+                            div(class="col-sm-6")
+                            {
+                                label("style"="font-weight:bold"){"Descripción:"}
+                                input(type="text" class="form-control" name="descripcion" value="#<@('./descripcion')>" required="true" maxlength="50")
+                            }
+                                    
+                        }
+                        div(class="mb-3 row")       
+                        {
+                            div(class="col-sm-6")
+                            {
+                                label(class="form-label"){"Comisión 1:"}
+                                input(type="number" class="form-control" step="any" name="comision1" value="#<@('./comision1')>")
+                            }
+                            div(class="col-sm-6")
+                            {
+                                label(class="form-label"){"Comisión 2:"}
+                                input(type="number" class="form-control" step="any" name="comision2" value="#<@('./comision2')>")
+                            }          
+                        }  
+                        div(class="mb-3 row")       
+                        {
+                            div(class="col-sm-6")
+                            {
+                                label(class="form-label"){"Comisión 3:"}
+                                input(type="number" class="form-control" step="any" name="comision3" value="#<@('./comision3')>")
+                            }
+                            div(class="col-sm-6")
+                            {
+                                label(class="form-label"){"Comisión 4:"}
+                                input(type="number" class="form-control" step="any" name="comision4" value="#<@('./comision4')>")
+                            }          
+                        }  
+                        div(class="mb-3")       
+                        {                           
+                            label(class="form-label"){"Comisión 5:"}
+                            input(type="number" class="form-control" step="any" name="comision5" value="#<@('./comision5')>")
+                        }   
+
+                        input(type="hidden" name="sys_recver" value="#<@('./sys_recver')>")
+                        div(class="text-center pt-4")
+                        {
+                            button(type="submit" class="btn btn-primary m-1"){"Guardar"}
+                            a(class="btn btn-danger m-1" href="../" ){"Cancelar"}
+                        }
+                        
+                    }
+                }
+            }
+        }
+        #$
+            style{
+                $'
+                @media only screen and (max-width: 500px) and (min-width: 100px)
+                {
+                    #dv-w{
+                        margin-top:30 !important;
+                        width:80% !important;
+                    }
+                }
+                '
+            }
+    }
+    ##
+}

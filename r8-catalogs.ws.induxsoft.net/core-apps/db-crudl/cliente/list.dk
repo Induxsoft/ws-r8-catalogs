@@ -1,0 +1,177 @@
+#include "dkli.dkh"
+#!
+
+module "list_view_contacto.dk"
+{
+	#include "functions.dkh"
+	#include "serialize.dkh"
+    #include "dbr.dkh"
+    #include "uielements.dkl"
+    #include "../../../config.dkl"
+    do @context.begin(@crud_context)
+
+	ref @http_context=@("&http")
+	
+    new def_tipo_cliente
+    {
+        @"datatable*":dbr.list(@("&database"), "select sys_pk, descripcion from tipocliente order by sys_pk", @null)
+        member "attributes"
+        {
+            @"class":"form-select tipocliente"
+            @"name":"tipocliente"
+        }
+        @"text_field":"descripcion"
+        @"value_field":"sys_pk"
+        @"selected":field.dstr(@('&parameters'),"tc_id","1")
+    }
+
+	new @table_definition
+    {
+    	@"datatable*":@("&.")
+    	member @"columns"
+        {
+        	member @"codigo"
+        	{
+        		@"caption":"Código"
+        	}
+        	member @"nombre"
+        	{
+        		@"caption":"Nombre"
+        	}
+            member @"rfc"
+        	{
+        		@"caption":"RFC"
+        	}
+            member @"direccion"
+        	{
+        		@"caption":"Dirección"
+        	}
+            member @"colonia"
+        	{
+        		@"caption":"Colonia"
+        	}
+            member @"codpos"
+        	{
+        		@"caption":"Código postal"
+        	}
+            member @"telefonos"
+        	{
+        		@"caption":"teléfono"
+        	}
+            member @"email"
+        	{
+        		@"caption":"eMail"
+        	}
+            member @"saldo"
+        	{
+        		@"caption":"Saldo"
+        	}
+            member @"acuerdos_pendientes"
+        	{
+        		@"caption":"Acuerdos pendientes"
+        	}
+            member @"pais"
+        	{
+        		@"caption":"País"
+        	}
+            member @"estado"
+        	{
+        		@"caption":"Estado"
+        	}
+            member @"ciudad"
+        	{
+        		@"caption":"Ciudad"
+        	}
+            member @"zona"
+        	{
+        		@"caption":"Zona"
+        	}
+            member @"tipo_cliente"
+        	{
+        		@"caption":"Tipo de cliente"
+        	}
+            member @"agente"
+        	{
+        		@"caption":"Agente"
+        	}
+        	member @"_actions"
+        	{
+        		@"caption":"Acción"
+        	}
+        }
+    }
+
+    #$
+    div(class="m-2 row " style="width:100%")
+    {
+        // div(class="col-md-10")
+        // {
+        //     // div(class="col-md-8")
+        //     // {
+        //     //     input(class="form-control" type="search" placeholder="Search" "aria-label"="Search")
+        //     // }
+        //     // div(class="col-md-2")
+        //     // {
+        //     //      button(class="btn btn-primary col-auto" type="submit"){$"Buscar"}
+        //     // }
+        // }
+        div(class="col-sm-12 col-lg-8 col-md-6")
+        {
+            label{$"Tipos de clientes:"}
+            #!
+            do uie.dbSelect(def_tipo_cliente)
+            #$
+            label{$"Clientes:"}
+            select(name="clientes" class="form-select clientes")
+            {
+                option(value="1"){$"Todos los clientes"}
+                option(value="2"){$"Clientes con saldo"}
+                option(value="3"){$"Clientes sin saldo"}
+                option(value="4"){$"Clientes con acuerdos de pago"}
+            }br{}
+            button(class="btn btn-primary" onclick="refresh();"){$"Aplicar"}
+        }
+        #$
+        div(class="m-2 " style="")
+        {
+            // CLIENTES
+            div(class="card ")
+            {
+                div(class="card-header")
+                {
+                    h6{$"Clientes"}
+                }
+                div(class="card-body")
+                {
+                    #!
+                        include @path_common
+                }
+            }
+        }
+        #$
+        script{$'
+            function refresh()
+            {
+                client_param = "";
+                switch($(".clientes").val())
+                {
+                    case "1":
+                        client_param = "&client=1"
+                        break;
+                    case "2":
+                        client_param = "&client=2"
+                        break;
+                    case "3":
+                        client_param = "&client=3"
+                        break;
+                    case "4":
+                        client_param = "&client=4"
+                        break;
+                }
+                window.location.href="./?tc_id="+$(".tipocliente").val()+client_param;
+            }
+        '}
+    }
+    #!
+	do @context.end()
+}

@@ -1,0 +1,110 @@
+#include "dkli.dkh"
+#!
+
+module "cfgimpuesto.dk"
+{
+   @list_query="select #<@sys_fields>,nombre,
+   I1Compra,I2Compra,I3Compra,I4Compra,
+   I1Venta,I2Venta,I3Venta,I4Venta,
+   uf_TipoI1,uf_TipoI2,uf_TipoI3,uf_TipoI4,
+   tasa from cfgimpuesto;"
+   @read_query="select #<@sys_fields>,nombre,
+   replace(substring_index(i1compra,'|',+1),'%','')as Interior_Compra1,
+   replace(substring_index(i1compra,'|',-1),'%','')as Frontera_Compra1,
+   replace(substring_index(i2compra,'|',+1),'%','')as Interior_Compra2,
+   replace(substring_index(i2compra,'|',-1),'%','')as Frontera_Compra2,
+   replace(substring_index(i3compra,'|',+1),'%','')as Interior_Compra3,
+   replace(substring_index(i3compra,'|',-1),'%','')as Frontera_Compra3,
+   replace(substring_index(i4compra,'|',+1),'%','')as Interior_Compra4,
+   replace(substring_index(i4compra,'|',-1),'%','')as Frontera_Compra4,
+   replace(substring_index(i1venta,'|',+1),'%','')as Interior_Venta1,
+   replace(substring_index(i1venta,'|',-1),'%','')as Frontera_Venta1,
+   replace(substring_index(i2venta,'|',+1),'%','')as Interior_Venta2,
+   replace(substring_index(i2venta,'|',-1),'%','')as Frontera_Venta2,
+   replace(substring_index(i3venta,'|',+1),'%','')as Interior_Venta3,
+   replace(substring_index(i3venta,'|',-1),'%','')as Frontera_Venta3,
+   replace(substring_index(i4venta,'|',+1),'%','')as Interior_Venta4,
+   replace(substring_index(i4venta,'|',-1),'%','')as Frontera_Venta4,
+   uf_TipoI1,uf_TipoI2,uf_TipoI3,uf_TipoI4,
+   tasa,ObjetoImp from #<@table_name> where #<@keyfield>=@_entity_id limit 1;"
+
+   
+      cfgimpuesto.create::&db,&params,&data
+      {
+         @use_transaction=@false
+         ref data_new=record.copy(data,"*")
+         do record.clear(data)
+         data<"I1Compra">:"%"+@@(data_new,"I1Compra_1")+"|%"+@@(data_new,"I1Compra_2") //%1|%2
+         data<"I1Venta">:"%"+@@(data_new,"I1Venta_1")+"|%"+@@(data_new,"I1Venta_2")
+
+         data<"I2Compra">:"%"+@@(data_new,"I2Compra_1")+"|%"+@@(data_new,"I2Compra_2")
+         data<"I2Venta">:"%"+@@(data_new,"I2Venta_1")+"|%"+@@(data_new,"I2Venta_2")
+
+         data<"I3Compra">:"%"+@@(data_new,"I3Compra_1")+"|%"+@@(data_new,"I3Compra_2")
+         data<"I3Venta">:"%"+@@(data_new,"I3Venta_1")+"|%"+@@(data_new,"I3Venta_2")
+
+         data<"I4Compra">:"%"+@@(data_new,"I4Compra_1")+"|%"+@@(data_new,"I4Compra_2")
+         data<"I4Venta">:"%"+@@(data_new,"I4Venta_1")+"|%"+@@(data_new,"I4Venta_2")
+
+         data<"nombre">:@@(data_new,"nombre")
+         data<"uf_TipoI1">:@@(data_new,"uf_TipoI1")
+         data<"uf_TipoI2">:@@(data_new,"uf_TipoI2")
+         data<"uf_TipoI3">:@@(data_new,"uf_TipoI3")
+         data<"uf_TipoI4">:@@(data_new,"uf_TipoI4")
+         data<"ObjetoImp">:@@(data_new,"ObjetoImp")
+         data<"tasa">:@@(data_new,"#excentoiva")
+
+         do dbr.begin(db)
+         ref res=entity.create(db,params,data)
+         do dbr.commit(db)
+         return res
+         exception
+         {
+            if dbr.in_transaction(db){do dbr.rollback(db)}
+            do rise_error(500,last_error())
+         }
+
+      }
+      cfgimpuesto.update::&db,&params,&data
+      {
+         @use_transaction=@false
+         ref data_new=record.copy(data,"*")
+         do record.clear(data)
+         data<"I1Compra">:"%"+@@(data_new,"I1Compra_1")+"|%"+@@(data_new,"I1Compra_2") //%1|%2
+         data<"I1Venta">:"%"+@@(data_new,"I1Venta_1")+"|%"+@@(data_new,"I1Venta_2")
+
+         data<"I2Compra">:"%"+@@(data_new,"I2Compra_1")+"|%"+@@(data_new,"I2Compra_2")
+         data<"I2Venta">:"%"+@@(data_new,"I2Venta_1")+"|%"+@@(data_new,"I2Venta_2")
+
+         data<"I3Compra">:"%"+@@(data_new,"I3Compra_1")+"|%"+@@(data_new,"I3Compra_2")
+         data<"I3Venta">:"%"+@@(data_new,"I3Venta_1")+"|%"+@@(data_new,"I3Venta_2")
+
+         data<"I4Compra">:"%"+@@(data_new,"I4Compra_1")+"|%"+@@(data_new,"I4Compra_2")
+         data<"I4Venta">:"%"+@@(data_new,"I4Venta_1")+"|%"+@@(data_new,"I4Venta_2")
+
+         data<"nombre">:@@(data_new,"nombre")
+         data<"uf_TipoI1">:@@(data_new,"uf_TipoI1")
+         data<"uf_TipoI2">:@@(data_new,"uf_TipoI2")
+         data<"uf_TipoI3">:@@(data_new,"uf_TipoI3")
+         data<"uf_TipoI4">:@@(data_new,"uf_TipoI4")
+         data<"sys_recver">:@@(data_new,"sys_recver")
+         data<"ObjetoImp">:@@(data_new,"ObjetoImp")
+         data<"tasa">:@@(data_new,"#excentoiva")
+
+         do dbr.begin(db)
+         ref res=entity.update(db,params,data)
+         do dbr.commit(db)
+         return res
+         exception
+         {
+            if dbr.in_transaction(db){do dbr.rollback(db)}
+            do rise_error(500,last_error())
+         }
+      }
+      point @create to cfgimpuesto.create
+      point @update to cfgimpuesto.update
+}
+
+    
+    
+    

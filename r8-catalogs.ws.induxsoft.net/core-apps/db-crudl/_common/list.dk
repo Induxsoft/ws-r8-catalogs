@@ -1,0 +1,79 @@
+#include "dkli.dkh"
+#set "meta-xml-declaration" ""
+#!
+
+module "list.dk"
+{
+ 
+    #include "uielements.dkl"
+    #include "uielements.dbtable.dkl"
+    #include "serialize.dkh"
+
+    cell_link_func::&params, &row, &cell
+    {
+        //params=Parámetros de la table (def_table)
+        //row=Datos (registro) de la fila
+        //cell=Información de la celda
+
+        //cell<"text">:@@(cell,"cell_type")
+        // do rise_error(99,to.json(cell))
+        new headers
+        {
+            @"style":"position: sticky !important;top:0 !important;background-color:#fff;"
+            @"class":"h6"
+        }
+        if @@(cell,"element")=="th"{cell<"attributes*">:headers}
+        if @@(cell,"cell_type")!="data" &&  @@(cell,"cell_type")!="unknow" { return }
+        if @@(cell,"column")=="_actions"
+        {
+            cell<"text">:ftext('<a id="btnEditar" href="./#<@@(row,"sys_pk")>/">Editar</a> |<a onclick="deleteEntity(#<@@(row,"sys_pk")>)" href="#" id="btnEliminar">Eliminar</a>')
+            
+        }
+        
+    }
+
+    point cell_link to cell_link_func
+    using @table_definition
+    {
+        @"before_cell*":cell_link
+        @"build_array":@true
+        member @"attributes"
+        {
+            @"class":"table table-hover"
+        }
+    }
+    
+
+    ##
+    div(class="container-fluid" id="div-first")
+    {
+
+        a(class="btn btn-light shadow-sm p-2 mb-2" style="background-color:#357aff1" href="./_new/" id="btnAgregar"){i(class="fa fa-plus" style="color:#dc3545"){""}$"Agregar"}
+        div(style="overflow-y:auto;height:80%")
+        {
+                 ##
+                do uie.dbtable(@table_definition)
+                if @count(@@(@table_definition,"&array_data"))<=0
+                {
+                    #$
+                    div(class="text-center")
+                    {
+                        h4(style="margin-top:10%"){"Ningún dato encontrado."}
+                    }
+                }
+                ##
+        }
+        #$
+        style{
+            $'
+            @media only screen and (max-width: 500px) and (min-width: 341px)
+            {
+                #div-first{
+                    margin-top:30 !important
+                }
+            }
+            '
+        }
+    }
+    ##
+}
